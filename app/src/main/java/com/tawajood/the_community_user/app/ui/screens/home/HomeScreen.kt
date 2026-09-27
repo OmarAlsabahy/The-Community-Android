@@ -1,0 +1,154 @@
+package com.tawajood.the_community_user.app.ui.screens.home
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.tawajood.the_community_user.R
+import com.tawajood.the_community_user.app.ui.shared.CustomScaffold
+import com.tawajood.the_community_user.app.ui.shared.SearchField
+import com.tawajood.the_community_user.app.ui.shared.UiText
+import com.tawajood.the_community_user.app.ui.theme.GrayF4
+import com.tawajood.the_community_user.app.ui.theme.Primary
+import com.tawajood.the_community_user.domain.models.home.BannerModel
+import com.tawajood.the_community_user.domain.models.profile.ProfileResponseModel
+import com.tawajood.the_community_user.utils.ToastUtils
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()){
+    val state by  viewModel.state.collectAsState()
+    val context = LocalContext.current
+    val pagerState = rememberPagerState(pageCount = {state.banners.size})
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect->
+            when(effect){
+                is HomeProfileEffect.ShowToast->{
+                    ToastUtils.showErrorToast(context,effect.message)
+                }
+            }
+        }
+    }
+    LaunchedEffect(pagerState.currentPage) {
+        if (!pagerState.isScrollInProgress && pagerState.currentPage<state.banners.size-1){
+            delay(2000.milliseconds)
+            pagerState.animateScrollToPage(pagerState.currentPage+1)
+        }
+    }
+
+    CustomScaffold(hasTopBar = false, content = {innerPadding->
+        val state by viewModel.state.collectAsState()
+        val scrollState = rememberScrollState()
+        Box(modifier = Modifier.fillMaxSize()){
+            DisplayContent(Modifier.padding(horizontal = 16.dp).fillMaxSize()
+                .padding(innerPadding).verticalScroll(scrollState),
+                state, onSearchValueChange = {value->
+                    viewModel.sendIntent(HomeProfileIntent.OnSearchValueChanges(value))
+                },pagerState)
+        }
+    })
+}
+
+@Composable
+private fun DisplayContent(
+    modifier: Modifier,
+    state: HomeUiState,
+    onSearchValueChange: (String) -> Unit = {},
+    pagerState: PagerState
+) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        DisplayProfileSection(Modifier.fillMaxWidth(),state.profile)
+        SearchField(state.searchValue,onSearchValueChange)
+        DisplayBanners(state.banners,pagerState)
+    }
+}
+
+@Composable
+private fun DisplayBanners(banners: List<BannerModel>, pagerState: PagerState,) {
+    if (banners.isNotEmpty()){
+        Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            HorizontalPager(pagerState, pageSpacing = 8.dp) {index->
+                AsyncImage(model = banners[index].image , contentDescription = null,
+                    modifier = Modifier.fillMaxWidth().aspectRatio(340f/189f)
+                        .clip(shape = RoundedCornerShape(24.dp)), contentScale = ContentScale.Crop)
+            }
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+                Row( horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                    repeat(banners.size){
+                        Box(modifier = if (it == pagerState.currentPage){
+                            Modifier.width(55.dp).aspectRatio(55f/15f).background(color = Primary,
+                                shape = RoundedCornerShape(8.dp))
+                        }else{
+                            Modifier.width(17.dp).aspectRatio(17f/10f).background(color = Color(0xFFE9EDF1),
+                                shape = RoundedCornerShape(8.dp))
+                        }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DisplayProfileSection(modifier: Modifier, profile: ProfileResponseModel?) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(verticalAlignment = Alignment.Top) {
+            AsyncImage(model = profile?.image , contentDescription = null,
+                modifier = Modifier.size(40.dp).clip(shape = CircleShape))
+            UiText(profile?.name?:"", fontSize = 14.sp, color = Primary, fontWeight = FontWeight.W700)
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically , horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            TopHeaderButton(R.drawable.qr_code_ic,{})
+            TopHeaderButton(R.drawable.notification_ic,{})
+        }
+    }
+}
+
+@Composable
+private fun TopHeaderButton(icon: Int, onButtonClicked: () -> Unit) {
+    Card(onClick = onButtonClicked, shape = CircleShape,
+        colors = CardDefaults.cardColors(GrayF4)) {
+        Icon(painterResource(icon), modifier = Modifier.padding(11.dp),contentDescription = null,
+            tint = Color.Unspecified)
+    }
+}
