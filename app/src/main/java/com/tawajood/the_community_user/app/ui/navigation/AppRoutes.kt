@@ -15,4 +15,13 @@ sealed interface AppRoutes {
     data object Home: AppRoutes
 
 
+    @Serializable
+    data object Main: AppRoutes
+
+    @Serializable
+    data object SocietyHome: AppRoutes
+    @Serializable
+    data class PostDetails(val id: Int): AppRoutes
+
+
 }

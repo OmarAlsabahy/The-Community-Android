@@ -5,11 +5,13 @@ import com.tawajood.the_community_user.data.repository.home.HomeRepository
 import com.tawajood.the_community_user.data.repository.language.LanguageRepository
 import com.tawajood.the_community_user.data.repository.on_boarding.OnBoardingRepository
 import com.tawajood.the_community_user.data.repository.profile.ProfileRepository
+import com.tawajood.the_community_user.data.repository.society.SocietyHomeRepository
 import com.tawajood.the_community_user.domain.repository.auth.IAuthRepository
 import com.tawajood.the_community_user.domain.repository.home.IHomeRepository
 import com.tawajood.the_community_user.domain.repository.language.ILanguageRepository
 import com.tawajood.the_community_user.domain.repository.on_boarding.IOnBoardingRepository
 import com.tawajood.the_community_user.domain.repository.profile.IProfileRepository
+import com.tawajood.the_community_user.domain.repository.society.ISocietyHomeRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -46,4 +48,10 @@ abstract class RepositoryModule {
     abstract fun bindHomeRepository(
         repository: HomeRepository
     ): IHomeRepository
+    @Binds
+    @Singleton
+    abstract fun bindSocietyRepository(
+        repository: SocietyHomeRepository
+    ): ISocietyHomeRepository
+
 }

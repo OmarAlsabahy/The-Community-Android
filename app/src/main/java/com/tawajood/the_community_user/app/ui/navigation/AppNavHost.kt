@@ -10,7 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.tawajood.the_community_user.app.ui.screens.auth.LoginScreen
 import com.tawajood.the_community_user.app.ui.screens.auth.VerifyOtpScreen
-import com.tawajood.the_community_user.app.ui.screens.home.HomeScreen
+import com.tawajood.the_community_user.app.ui.screens.main.MainScreen
+import com.tawajood.the_community_user.app.ui.screens.society.PostDetailsScreen
 import com.tawajood.the_community_user.app.ui.screens.splash.SplashScreen
 
 @Composable
@@ -35,7 +36,7 @@ fun RootNavHost(
                         }
                     },
                     navToHome = {
-                        rootController.navigate(AppRoutes.Home){
+                        rootController.navigate(AppRoutes.Main){
                             popUpTo(0)
                         }
                     }
@@ -51,8 +52,16 @@ fun RootNavHost(
                 val args = it.toRoute<AppRoutes.VerifyOtpScreen>()
                 VerifyOtpScreen(countryCode = args.countryCode, phoneNumber = args.phoneNumber)
             }
-            composable<AppRoutes.Home> {
-                HomeScreen()
+            composable<AppRoutes.Main>{
+                MainScreen(){route->
+                    if (route!=null){
+                        rootController.navigate(route)
+                    }
+                }
+            }
+            composable<AppRoutes.PostDetails>{
+                val args = it.toRoute<AppRoutes.PostDetails>()
+                PostDetailsScreen(id = args.id)
             }
         }
     }

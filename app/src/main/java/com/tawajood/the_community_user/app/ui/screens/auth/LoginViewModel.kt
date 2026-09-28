@@ -121,7 +121,7 @@ class LoginViewModel @Inject constructor(
                         if (state.data!=null){
                             saveTokenUseCase.saveToken(state.data)
                         }
-                        emitEffect { LoginEffect.Nav(AppRoutes.Home) }
+                        emitEffect { LoginEffect.Nav(AppRoutes.Main) }
                     }
                     is RequestState.Error->{
                         setState {

@@ -18,6 +18,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -42,8 +44,10 @@ import com.tawajood.the_community_user.R
 import com.tawajood.the_community_user.app.ui.shared.CustomScaffold
 import com.tawajood.the_community_user.app.ui.shared.SearchField
 import com.tawajood.the_community_user.app.ui.shared.UiText
+import com.tawajood.the_community_user.app.ui.theme.Gray900
 import com.tawajood.the_community_user.app.ui.theme.GrayF4
 import com.tawajood.the_community_user.app.ui.theme.Primary
+import com.tawajood.the_community_user.domain.models.home.AnnouncementModelDto
 import com.tawajood.the_community_user.domain.models.home.BannerModel
 import com.tawajood.the_community_user.domain.models.profile.ProfileResponseModel
 import com.tawajood.the_community_user.utils.ToastUtils
@@ -71,7 +75,13 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()){
         }
     }
 
-    CustomScaffold(hasTopBar = false, content = {innerPadding->
+    CustomScaffold(hasTopBar = false, floatActionButton = {
+        Box(modifier = Modifier.background(color = Primary, shape = CircleShape).padding(14.dp),
+            contentAlignment = Alignment.Center){
+            Icon(Icons.Filled.Add, modifier = Modifier.size(28.dp), contentDescription = null,
+                tint = Color.White)
+        }
+    }, content = {innerPadding->
         val state by viewModel.state.collectAsState()
         val scrollState = rememberScrollState()
         Box(modifier = Modifier.fillMaxSize()){
@@ -95,6 +105,26 @@ private fun DisplayContent(
         DisplayProfileSection(Modifier.fillMaxWidth(),state.profile)
         SearchField(state.searchValue,onSearchValueChange)
         DisplayBanners(state.banners,pagerState)
+        DisplayCategoriesSection(Modifier.padding(top = 12.dp).fillMaxWidth())
+        DisplayAnnouncement(Modifier.fillMaxWidth().aspectRatio(361f/189f),state.announcement)
+    }
+}
+
+@Composable
+private fun DisplayAnnouncement(modifier: Modifier, announcement: AnnouncementModelDto?) {
+    if (announcement!=null){
+        Card(modifier, shape = RoundedCornerShape(16.dp)) {
+            AsyncImage(model = announcement.image , modifier = Modifier.fillMaxSize(),
+                contentDescription = null , contentScale = ContentScale.Crop)
+        }
+    }
+}
+
+@Composable
+private fun DisplayCategoriesSection(modifier: Modifier) {
+    Column(modifier = modifier) {
+        UiText("الاقسام", fontSize = 24.sp, color = Gray900, fontWeight = FontWeight.W700)
+
     }
 }
 
@@ -145,7 +175,7 @@ private fun DisplayProfileSection(modifier: Modifier, profile: ProfileResponseMo
 }
 
 @Composable
-private fun TopHeaderButton(icon: Int, onButtonClicked: () -> Unit) {
+fun TopHeaderButton(icon: Int, onButtonClicked: () -> Unit) {
     Card(onClick = onButtonClicked, shape = CircleShape,
         colors = CardDefaults.cardColors(GrayF4)) {
         Icon(painterResource(icon), modifier = Modifier.padding(11.dp),contentDescription = null,

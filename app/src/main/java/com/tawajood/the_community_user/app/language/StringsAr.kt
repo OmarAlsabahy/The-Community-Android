@@ -314,4 +314,10 @@ class StringsAr : Strings {
     override val pleaseSignLabel: String = "يرجي التوقيع"
     override val clearSignatureBtn: String = "مسح التوقيع"
     override val agreeTermsConditionsPrivacyPolicy: String = "أوافق علي الشروط والاحكام وسياسة الخصوصية"
+    override val society: String
+        get() = "المجتمع"
+    override val scan: String
+        get() = "مسح"
+    override val notification: String
+        get() = "الاشعارات"
 }

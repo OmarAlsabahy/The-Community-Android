@@ -5,8 +5,10 @@ import com.tawajood.the_community_user.app.base.UiEffect
 import com.tawajood.the_community_user.app.base.UiIntent
 import com.tawajood.the_community_user.app.base.UiState
 import com.tawajood.the_community_user.domain.base.RequestState
+import com.tawajood.the_community_user.domain.models.home.AnnouncementModelDto
 import com.tawajood.the_community_user.domain.models.home.BannerModel
 import com.tawajood.the_community_user.domain.models.profile.ProfileResponseModel
+import com.tawajood.the_community_user.domain.usecase.home.GetAnnouncementsUseCase
 import com.tawajood.the_community_user.domain.usecase.home.GetBannersUseCase
 import com.tawajood.the_community_user.domain.usecase.profile.GetProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +19,7 @@ data class HomeUiState(
     val profile: ProfileResponseModel? = null,
     val searchValue: String = "",
     val banners : List<BannerModel> = emptyList(),
+    val announcement : AnnouncementModelDto? = null
 ): UiState
 sealed interface HomeProfileIntent: UiIntent{
     data class OnSearchValueChanges(val value: String): HomeProfileIntent
@@ -27,7 +30,8 @@ sealed interface HomeProfileEffect: UiEffect{
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getProfileUseCase: GetProfileUseCase,
-    private val getBannersUseCase: GetBannersUseCase
+    private val getBannersUseCase: GetBannersUseCase,
+    private val getAnnouncementsUseCase: GetAnnouncementsUseCase
 ): BaseViewModel<HomeUiState, HomeProfileIntent, HomeProfileEffect>(HomeUiState()) {
     init {
         loadPage()
@@ -36,6 +40,29 @@ class HomeViewModel @Inject constructor(
     private fun loadPage() {
         getProfile()
         getBanners()
+        getAnnouncement()
+    }
+
+    private fun getAnnouncement() {
+        launchScope {
+            getAnnouncementsUseCase(Unit).collect { state->
+                when(state){
+                    is RequestState.Success->{
+                        setState {
+                            copy(
+                                announcement = state.data
+                            )
+                        }
+                    }
+                    is RequestState.Error->{
+                        emitEffect {
+                            HomeProfileEffect.ShowToast(state.message)
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 
     private fun getBanners() {
@@ -52,7 +79,13 @@ class HomeViewModel @Inject constructor(
                     is RequestState.Error->{
                         emitEffect { HomeProfileEffect.ShowToast(state.message) }
                     }
-                    else -> {}
+                    is RequestState.Loading->{
+                        setState {
+                            copy(
+                                isLoading = true
+                            )
+                        }
+                    }
                 }
             }
         }

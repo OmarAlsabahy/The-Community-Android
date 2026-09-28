@@ -299,4 +299,7 @@ interface Strings {
     val pleaseSignLabel: String
     val clearSignatureBtn: String
     val agreeTermsConditionsPrivacyPolicy: String
+    val society: String
+    val scan: String
+    val notification: String
 }

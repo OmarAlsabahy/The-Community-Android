@@ -321,4 +321,10 @@ class StringsEn : Strings {
     override val pleaseSignLabel: String = "Please sign"
     override val clearSignatureBtn: String = "Clear signature"
     override val agreeTermsConditionsPrivacyPolicy: String = "I agree to the Terms and Conditions and Privacy Policy"
+    override val society: String
+        get() = "Society"
+    override val scan: String
+        get() = "Scan"
+    override val notification: String
+        get() = "Notification"
 }

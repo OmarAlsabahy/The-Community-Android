@@ -4,6 +4,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.tawajood.the_community_user.data.remote.ApiService
 import com.tawajood.the_community_user.data.remote.AuthInterceptor
+import com.tawajood.the_community_user.data.remote.StringOrObjectAdapter
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,7 +47,10 @@ object NetworkModule {
 
     @Singleton
     @Provides
-    fun provideMoshi(): Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
+    fun provideMoshi(): Moshi = Moshi.Builder()
+        .add(StringOrObjectAdapter())
+        .addLast(KotlinJsonAdapterFactory())
+        .build()
 
     @Singleton
     @Provides
