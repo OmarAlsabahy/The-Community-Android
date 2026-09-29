@@ -11,6 +11,7 @@ import com.tawajood.the_community_user.domain.models.society.PostDto
 import com.tawajood.the_community_user.domain.usecase.society.ChangePostLikeStatusUseCase
 import com.tawajood.the_community_user.domain.usecase.society.GetPostsCategoriesUseCase
 import com.tawajood.the_community_user.domain.usecase.society.GetPostsUseCase
+import com.tawajood.the_community_user.domain.usecase.society.SaveRemovePostUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -24,6 +25,9 @@ sealed interface SocietyHomeIntent: UiIntent{
     data class ChangeCategory(val index: Int): SocietyHomeIntent
     data class ChangePostLike(val id: Int?): SocietyHomeIntent
     data class OnPostClicked(val id: Int?): SocietyHomeIntent
+    data class UpdatePost(val post: PostDto?): SocietyHomeIntent
+    data class OnImagePressed(val post: PostDto):SocietyHomeIntent
+    data class ChangeBookMarkStatus(val id: Int?): SocietyHomeIntent
 }
 sealed interface SocietyHomeEffect: UiEffect{
     data class ShowToast(val message: String): SocietyHomeEffect
@@ -33,7 +37,8 @@ sealed interface SocietyHomeEffect: UiEffect{
 class SocietyHomeViewModel @Inject constructor(
     private val getPostsCategoriesUseCase: GetPostsCategoriesUseCase,
     private val getPostsUseCase: GetPostsUseCase,
-    private val changePostLikeStatusUseCase: ChangePostLikeStatusUseCase
+    private val changePostLikeStatusUseCase: ChangePostLikeStatusUseCase,
+    private val changeBookMarkUseCase: SaveRemovePostUseCase
 ): BaseViewModel<SocietyHomeUiState,SocietyHomeIntent,SocietyHomeEffect>(SocietyHomeUiState()) {
     init {
         loadPage()
@@ -67,16 +72,13 @@ class SocietyHomeViewModel @Inject constructor(
         launchScope {
             getPostsCategoriesUseCase(Unit).collect { state->
                 when(state){
-                    is RequestState.Loading->{
-                        setState { copy(isLoading = true) }
-                    }
                     is RequestState.Success->{
-                        setState { copy(isLoading = false, categories = state.data) }
+                        setState { copy(categories = state.data) }
                     }
                     is RequestState.Error->{
-                        setState { copy(isLoading = false) }
                         emitEffect { SocietyHomeEffect.ShowToast(state.message) }
                     }
+                    else -> {}
                 }
             }
         }
@@ -104,6 +106,59 @@ class SocietyHomeViewModel @Inject constructor(
             is SocietyHomeIntent.OnPostClicked->{
                 if (intent.id!=null){
                     emitEffect { SocietyHomeEffect.Nav(AppRoutes.PostDetails(intent.id)) }
+                }
+            }
+            is SocietyHomeIntent.UpdatePost->{
+                if (intent.post!=null){
+                    val currentPosts = currentState.posts.map {
+                        if (it.id == intent.post.id){
+                            intent.post
+                        }else{
+                            it
+                        }
+                    }
+                    setState { copy(posts = currentPosts) }
+                }
+            }
+            is SocietyHomeIntent.OnImagePressed->{
+                emitEffect { SocietyHomeEffect.Nav(AppRoutes.PostImage(intent.post)) }
+            }
+            is SocietyHomeIntent.ChangeBookMarkStatus->{
+                if (intent.id!=null){
+                    setState {
+                        copy(
+                            posts = posts.map {
+                                if (it.id == intent.id){
+                                    it.copy(isSaved = if (it.isSaved==true) false else true)
+                                }else{
+                                    it
+                                }
+                            }
+                        )
+                    }
+                    changeBookMarkStatus(intent.id)
+                }
+            }
+        }
+    }
+
+    private fun changeBookMarkStatus(id: Int) {
+        launchScope {
+            changeBookMarkUseCase(id).collect { state->
+                when(state){
+                    is RequestState.Error-> {
+                        setState {
+                            copy(
+                                posts = posts.map {
+                                    if (it.id == id){
+                                        it.copy(isSaved = if (it.isSaved==true) false else true)
+                                    }else{
+                                        it
+                                    }
+                                }
+                            )
+                        }
+                    }else -> {}
                 }
             }
         }

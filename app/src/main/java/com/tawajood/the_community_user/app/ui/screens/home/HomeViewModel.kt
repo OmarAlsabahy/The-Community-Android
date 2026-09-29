@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
     private fun loadPage() {
         getProfile()
         getBanners()
-        getAnnouncement()
+//        getAnnouncement()
     }
 
     private fun getAnnouncement() {

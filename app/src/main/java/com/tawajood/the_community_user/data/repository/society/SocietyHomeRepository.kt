@@ -18,11 +18,26 @@ class SocietyHomeRepository @Inject constructor(private val api: ApiService): IS
         api.getPosts(categoryId)
     }
 
-    override suspend fun changePostLikeStatus(id: Int): RequestState<Any> = wrapApi {
+    override suspend fun changePostLikeStatus(id: Int): RequestState<Any?> = wrapApi {
         api.changePostLikeStatus(id)
     }
 
     override suspend fun getPostDetails(id: Int): RequestState<PostDto> = wrapApi {
         api.getPostDetails(id)
+    }
+
+    override suspend fun addComment(
+        postId: Int,
+        comment: String
+    ): RequestState<Any?> = wrapApi {
+        api.addComment(postId,comment)
+    }
+
+    override suspend fun changeCommentLikeStatus(id: Int): RequestState<Any?> = wrapApi {
+        api.changeCommentLikeStatus(id)
+    }
+
+    override suspend fun saveRemovePost(id: Int): RequestState<Any?> = wrapApi {
+        api.saveRemovePost(id)
     }
 }

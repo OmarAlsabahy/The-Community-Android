@@ -1,5 +1,6 @@
 package com.tawajood.the_community_user.app.ui.navigation
 
+import com.tawajood.the_community_user.domain.models.society.PostDto
 import kotlinx.serialization.Serializable
 
 sealed interface AppRoutes {
@@ -23,5 +24,7 @@ sealed interface AppRoutes {
     @Serializable
     data class PostDetails(val id: Int): AppRoutes
 
+    @Serializable
+    data class PostImage(val post: PostDto): AppRoutes
 
 }

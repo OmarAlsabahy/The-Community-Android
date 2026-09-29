@@ -3,6 +3,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -12,7 +13,11 @@ import com.tawajood.the_community_user.app.ui.screens.auth.LoginScreen
 import com.tawajood.the_community_user.app.ui.screens.auth.VerifyOtpScreen
 import com.tawajood.the_community_user.app.ui.screens.main.MainScreen
 import com.tawajood.the_community_user.app.ui.screens.society.PostDetailsScreen
+import com.tawajood.the_community_user.app.ui.screens.society.PostImageScreen
 import com.tawajood.the_community_user.app.ui.screens.splash.SplashScreen
+import com.tawajood.the_community_user.domain.models.society.PostDto
+import com.tawajood.the_community_user.utils.serializableNavType
+import kotlin.reflect.typeOf
 
 @Composable
 fun RootNavHost(
@@ -53,15 +58,36 @@ fun RootNavHost(
                 VerifyOtpScreen(countryCode = args.countryCode, phoneNumber = args.phoneNumber)
             }
             composable<AppRoutes.Main>{
-                MainScreen(){route->
+                val postDto = remember(it){
+                    it.savedStateHandle.getStateFlow<PostDto?>("post", null)
+                }
+                MainScreen(postFlow = postDto, nav = {route->
                     if (route!=null){
                         rootController.navigate(route)
                     }
-                }
+                })
             }
             composable<AppRoutes.PostDetails>{
                 val args = it.toRoute<AppRoutes.PostDetails>()
-                PostDetailsScreen(id = args.id)
+                PostDetailsScreen(id = args.id, pop = {
+                    rootController.popBackStack()
+                }, returnData = {post->
+                    rootController.previousBackStackEntry?.savedStateHandle?.set<PostDto?>("post",post)
+                })
+            }
+            composable<AppRoutes.PostImage>(
+                typeMap = mapOf(
+                    typeOf<PostDto>() to serializableNavType<PostDto>()
+                )
+            ){
+                val args = it.toRoute<AppRoutes.PostImage>()
+                PostImageScreen(args.post, pop = {
+                    rootController.popBackStack()
+                }, returnData = {post->
+                    rootController.previousBackStackEntry?.savedStateHandle?.set<PostDto?>("post",post)
+                }, nav = {route->
+                    rootController.navigate(route)
+                })
             }
         }
     }

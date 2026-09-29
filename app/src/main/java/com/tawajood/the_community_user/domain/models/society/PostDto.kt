@@ -1,5 +1,11 @@
 package com.tawajood.the_community_user.domain.models.society
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+
+@Serializable
+@Parcelize
 data class PostDto(
     val id: Int?,
     val content: String?,
@@ -11,16 +17,23 @@ data class PostDto(
     val comments : List<Comment?>?,
     val created_at: String?,
     val from: String?,
-    val likeStatus: Boolean?
+    val likeStatus: Boolean?,
+    val isSaved: Boolean?
 
-)
+): Parcelable
+@Serializable
+@Parcelize
 data class User(
     val id: Int?,
     val name: String?,
     val image: String?
-)
+): Parcelable
+@Serializable
+@Parcelize
 data class Comment(
     val id: Int?,
     val comment: String?,
     val user: User?,
-)
+    val replies: List<Comment?>?,
+    val likeStatus: Boolean?
+): Parcelable

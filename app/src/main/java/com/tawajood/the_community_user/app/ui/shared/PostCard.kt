@@ -20,7 +20,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.Bookmark
+import androidx.compose.material.icons.outlined.BookmarkBorder
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,6 +44,7 @@ import coil.compose.AsyncImage
 import com.tawajood.the_community_user.R
 import com.tawajood.the_community_user.app.ui.theme.Black1f
 import com.tawajood.the_community_user.app.ui.theme.Gray9E
+import com.tawajood.the_community_user.app.ui.theme.Primary
 import com.tawajood.the_community_user.app.ui.theme.Primary10
 import com.tawajood.the_community_user.app.ui.theme.RedF44
 import com.tawajood.the_community_user.app.ui.theme.Secondary
@@ -49,28 +53,33 @@ import com.tawajood.the_community_user.domain.models.society.PostDto
 import com.tawajood.the_community_user.domain.models.society.User
 
 @Composable
-fun PostCard(post: PostDto,onFavClicked:(Int?)-> Unit,onCardClicked:(Int?)-> Unit){
+fun PostCard(post: PostDto,onFavClicked:(Int?)-> Unit,onCardClicked:(Int?)-> Unit,
+             onImageClicked:(PostDto)-> Unit,onBookMarkClicked: (Int?) -> Unit){
     val pagerState = rememberPagerState() {post.media?.size?:0 }
     Card(onClick = {onCardClicked(post.id)},modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp),
         border = BorderStroke(width = 1.dp , color = Primary10), colors = CardDefaults.cardColors(Color.White)) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             DisplayUserSection(Modifier.fillMaxWidth(),post.user,post.created_at?:"")
             DisplayPostContent(Modifier.fillMaxWidth(),post.content?:"",post.category?:"",
-                post.media,pagerState)
+                post.media,pagerState, onImageClicked = {
+                    onImageClicked(post)
+                })
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth(), color = Primary10)
             DisplayLikesComments(Modifier.fillMaxWidth(),post, onFavClicked = {
                 onFavClicked(post.id)
-            }, onCommentClicked = {onCardClicked(post.id)})
+            }, onCommentClicked = {onCardClicked(post.id)}, onBookMarkClicked = {
+                onBookMarkClicked(post.id)
+            })
         }
     }
 }
 
 @Composable
 private fun DisplayLikesComments(modifier: Modifier, posts: PostDto,onFavClicked: () -> Unit,
-                                 onCommentClicked:()-> Unit) {
+                                 onCommentClicked:()-> Unit, onBookMarkClicked:()-> Unit) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween){
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically) {
             DisplayPostItem(Modifier.weight(1f),posts.likesCount,posts.likeStatus,{
                 Icon(if (posts.likeStatus==true) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
                     contentDescription = null , tint = if (posts.likeStatus==true) RedF44 else Gray9E,
@@ -87,24 +96,27 @@ private fun DisplayLikesComments(modifier: Modifier, posts: PostDto,onFavClicked
             }, onClick = {})
         }
         DisplayPostItem(value = null, likeStatus = null, icon = {
-            Icon(painterResource(R.drawable.bookmark_ic) , contentDescription = null,
-                modifier = Modifier.size(20.dp), tint = Color.Unspecified)
-        }, onClick = {})
+            Icon(if (posts.isSaved ==true) Icons.Filled.Bookmark else Icons.Outlined.BookmarkBorder
+                , contentDescription = null,
+                modifier = Modifier.size(20.dp), tint = if (posts.isSaved ==true) Primary else Gray9E
+            )
+        }, onClick = onBookMarkClicked)
     }
 }
 
 @Composable
-private fun DisplayPostItem(
+fun DisplayPostItem(
     modifier: Modifier= Modifier,
     value: Int?,
     likeStatus: Boolean?,
     icon: @Composable () -> Unit,
-    onClick:()-> Unit
+    onClick:()-> Unit,
+    textColor: Color = if (likeStatus!=null && likeStatus) Black1f else TextGray
 ) {
     Row(modifier.clickable(enabled = true, onClick = onClick),verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         icon()
         if (value!=null){
-            UiText(value.toString() , fontSize = 12.sp , color = if (likeStatus!=null && likeStatus) Black1f else TextGray)
+            UiText(value.toString() , fontSize = 12.sp , color = textColor)
 
         }
     }
@@ -116,7 +128,8 @@ private fun DisplayPostContent(
     content: String,
     category: String,
     media: List<String?>?,
-    pagerState: PagerState
+    pagerState: PagerState,
+    onImageClicked: () -> Unit
 ) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         Column(modifier = Modifier.weight(2.5f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -129,8 +142,9 @@ private fun DisplayPostContent(
         HorizontalPager(pagerState, modifier = Modifier.weight(1f).aspectRatio(93f/96f)) { index->
             val currentMedia = media?.get(index)
             Box(Modifier.fillMaxSize().clip(shape = RoundedCornerShape(4.dp))){
-                AsyncImage(model = currentMedia , contentDescription = null, modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Fit)
+                AsyncImage(model = currentMedia , contentDescription = null, modifier = Modifier.fillMaxSize()
+                    .clickable(enabled = true, onClick = onImageClicked),
+                    contentScale = ContentScale.Fit,)
                 Box(Modifier.padding(start = 4.dp, top = 4.dp).background(color = Color.White.copy(alpha = 0.28f), shape = RoundedCornerShape(16.dp))
                     .padding(horizontal = 6.5.dp).align(Alignment.TopEnd), contentAlignment = Alignment.Center){
                     UiText("${pagerState.currentPage+1} / ${media?.size}", fontSize = 11.sp , color = Color.White,

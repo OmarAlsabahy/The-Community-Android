@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -46,7 +47,7 @@ fun CustomBottomAppBar(onItemClicked:(AppRoutes?)-> Unit){
     val selectedItem = remember {
         mutableStateOf(items[0])
     }
-    Box(modifier = Modifier.fillMaxWidth()){
+    Box(modifier = Modifier.navigationBarsPadding().fillMaxWidth()){
         Row(
             modifier = Modifier
                 .padding(top = 20.dp)

@@ -47,10 +47,11 @@ import com.tawajood.the_community_user.app.ui.theme.Primary40
 import com.tawajood.the_community_user.domain.models.society.PostCategoriesDto
 import com.tawajood.the_community_user.domain.models.society.PostDto
 import com.tawajood.the_community_user.utils.ToastUtils
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun SocietyHomeScreen(viewModel: SocietyHomeViewModel = hiltViewModel(),
-                      nav:(AppRoutes)-> Unit){
+                      nav:(AppRoutes)-> Unit,postFlow: StateFlow<PostDto?>?){
     val strings = LocalStrings.current
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
@@ -66,6 +67,11 @@ fun SocietyHomeScreen(viewModel: SocietyHomeViewModel = hiltViewModel(),
             }
         }
     }
+    LaunchedEffect(Unit) {
+        postFlow?.collect { post->
+            viewModel.sendIntent(SocietyHomeIntent.UpdatePost(post))
+        }
+    }
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.White, topBar = {
         DisplayTopBar(Modifier.fillMaxWidth(),strings.society)
     }) {innerPadding->
@@ -77,8 +83,12 @@ fun SocietyHomeScreen(viewModel: SocietyHomeViewModel = hiltViewModel(),
                 }, onFavClicked = {id->
                     viewModel.sendIntent(SocietyHomeIntent.ChangePostLike(id))
                 },
-                {id->
+                onCardClicked = {id->
                     viewModel.sendIntent(SocietyHomeIntent.OnPostClicked(id))
+                }, onImageClicked = {postDto ->
+                    viewModel.sendIntent(SocietyHomeIntent.OnImagePressed(postDto))
+                }, onBookMarkClicked = {id->
+                    viewModel.sendIntent(SocietyHomeIntent.ChangeBookMarkStatus(id))
                 })
             LoadingScreen(state.isLoading)
         }
@@ -89,24 +99,29 @@ fun SocietyHomeScreen(viewModel: SocietyHomeViewModel = hiltViewModel(),
 private fun DisplayContent(modifier: Modifier, state: SocietyHomeUiState,
                            onItemClicked: (Int) -> Unit,
                            onFavClicked: (Int?) -> Unit,
-                           onCardClicked:(Int?)-> Unit) {
+                           onCardClicked:(Int?)-> Unit,
+                           onImageClicked: (PostDto) -> Unit,
+                           onBookMarkClicked: (Int?) -> Unit) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(24.dp)) {
         Image(painterResource(R.drawable.banner), contentDescription = null, modifier = Modifier.fillMaxWidth()
             .aspectRatio(361f/160f).clip(shape = RoundedCornerShape(20.dp)), contentScale = ContentScale.Crop)
         DisplayCategories(Modifier.padding(top = 8.dp).fillMaxWidth(),state.categories,
             state.selectedCategory, onItemClicked = onItemClicked)
         DisplayPosts(Modifier.fillMaxWidth().weight(1f),state.posts, onFavClicked = onFavClicked,
-            onItemClicked = onCardClicked)
+            onItemClicked = onCardClicked, onImageClicked = onImageClicked,
+            onBookMarkClicked = onBookMarkClicked)
     }
 }
 
 @Composable
 private fun DisplayPosts(modifier: Modifier, posts: List<PostDto>,onFavClicked:(Int?)-> Unit,
-                         onItemClicked: (Int?) -> Unit) {
+                         onItemClicked: (Int?) -> Unit,onImageClicked:(PostDto)-> Unit,
+                         onBookMarkClicked: (Int?) -> Unit) {
     LazyColumn(modifier, verticalArrangement = Arrangement.spacedBy(20.dp)) {
         items(posts.size) { index ->
             val currentPost = posts[index]
-            PostCard(currentPost, onFavClicked = onFavClicked, onCardClicked = onItemClicked)
+            PostCard(currentPost, onFavClicked = onFavClicked, onCardClicked = onItemClicked,
+                onImageClicked, onBookMarkClicked = onBookMarkClicked)
         }
     }
 }

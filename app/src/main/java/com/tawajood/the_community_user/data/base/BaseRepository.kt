@@ -41,7 +41,10 @@ abstract class BaseRepository {
                 if (hasData) {
                     if (body.data != null) {
                         RequestState.Success(body.data)
-                    } else {
+                    } else if (body.result == true){
+                        RequestState.Success(body.data as T)
+                    }
+                    else {
                         logError("Response body.data is null while hasData = true")
                         RequestState.Error(
                             message = body.message?.ifBlank { "Unknown error" } ?: "Unknown error",

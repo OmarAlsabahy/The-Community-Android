@@ -10,5 +10,8 @@ class ApiPaths {
         const val posts = "post"
         const val changePostLike = "post/like/{id}"
         const val postDetails = "post/show/{id}"
+        const val comment = "post/comment"
+        const val commentLike = "post/comment/like/{id}"
+        const val save_remove_post = "post/save-remove"
     }
 }
