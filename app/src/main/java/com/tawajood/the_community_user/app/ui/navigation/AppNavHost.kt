@@ -9,9 +9,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.tawajood.the_community_user.app.ui.screens.auth.ForgetPasswordScreen
 import com.tawajood.the_community_user.app.ui.screens.auth.LoginScreen
+import com.tawajood.the_community_user.app.ui.screens.auth.NewPasswordScreen
 import com.tawajood.the_community_user.app.ui.screens.auth.VerifyOtpScreen
 import com.tawajood.the_community_user.app.ui.screens.main.MainScreen
+import com.tawajood.the_community_user.app.ui.screens.society.AddPostScreen
 import com.tawajood.the_community_user.app.ui.screens.society.PostDetailsScreen
 import com.tawajood.the_community_user.app.ui.screens.society.PostImageScreen
 import com.tawajood.the_community_user.app.ui.screens.splash.SplashScreen
@@ -53,15 +56,34 @@ fun RootNavHost(
                     }
                 }
             }
+            composable<AppRoutes.ForgetPassword>{
+                ForgetPasswordScreen(nav = {route->
+                    rootController.navigate(route)
+                })
+            }
             composable<AppRoutes.VerifyOtpScreen> {
                 val args = it.toRoute<AppRoutes.VerifyOtpScreen>()
-                VerifyOtpScreen(countryCode = args.countryCode, phoneNumber = args.phoneNumber)
+                VerifyOtpScreen(countryCode = args.countryCode, phoneNumber = args.phoneNumber,
+                    nav = {route->
+                        rootController.navigate(route)
+                    })
+            }
+            composable<AppRoutes.NewPassword>{
+                val args = it.toRoute<AppRoutes.NewPassword>()
+                NewPasswordScreen(resetToken = args.resetToken, phone = args.phone, nav = {route->
+                    rootController.navigate(route){
+                        popUpTo(0)
+                    }
+                })
             }
             composable<AppRoutes.Main>{
                 val postDto = remember(it){
                     it.savedStateHandle.getStateFlow<PostDto?>("post", null)
                 }
-                MainScreen(postFlow = postDto, nav = {route->
+                val createdPost = remember {
+                    it.savedStateHandle.getStateFlow<PostDto?>("createdPost",null)
+                }
+                MainScreen(postFlow = postDto, createdPostDto = createdPost, nav = {route->
                     if (route!=null){
                         rootController.navigate(route)
                     }
@@ -84,9 +106,15 @@ fun RootNavHost(
                 PostImageScreen(args.post, pop = {
                     rootController.popBackStack()
                 }, returnData = {post->
-                    rootController.previousBackStackEntry?.savedStateHandle?.set<PostDto?>("post",post)
+                    rootController.previousBackStackEntry?.savedStateHandle?.set<PostDto?>("createdPost",post)
                 }, nav = {route->
                     rootController.navigate(route)
+                })
+            }
+            composable<AppRoutes.AddPost>{
+                AddPostScreen(pop = {post->
+                    rootController.previousBackStackEntry?.savedStateHandle?.set("createdPost",post)
+                    rootController.popBackStack()
                 })
             }
         }

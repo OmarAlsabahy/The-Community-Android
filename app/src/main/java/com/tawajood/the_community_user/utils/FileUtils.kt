@@ -3,6 +3,9 @@ package com.tawajood.the_community_user.utils
 import android.content.Context
 import android.net.Uri
 import android.webkit.MimeTypeMap
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
@@ -24,7 +27,7 @@ class FileUtils {
             // Return the MIME type.
             return mimeType
         }
-        fun convertUriImageToFile(context: Context, uri: Uri): File? {
+        fun convertUriToFile(context: Context, uri: Uri): File? {
             // Get the cache directory.
             val cacheDir = context.cacheDir
 
@@ -56,6 +59,10 @@ class FileUtils {
 
             // Return the file.
             return null
+        }
+        fun convertFileToMultiPart(name: String,file: File): MultipartBody.Part{
+            val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+            return MultipartBody.Part.createFormData(name, file.name, requestFile)
         }
     }
 }

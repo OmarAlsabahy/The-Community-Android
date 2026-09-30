@@ -42,6 +42,7 @@ import com.tawajood.the_community_user.app.ui.shared.LoadingScreen
 import com.tawajood.the_community_user.app.ui.shared.PhoneField
 import com.tawajood.the_community_user.app.ui.shared.UiText
 import com.tawajood.the_community_user.app.ui.theme.Primary
+import com.tawajood.the_community_user.app.ui.theme.Primary50
 import com.tawajood.the_community_user.app.ui.theme.Secondary
 import com.tawajood.the_community_user.app.ui.theme.TextGray
 import com.tawajood.the_community_user.app.ui.theme.TextPrimary
@@ -85,6 +86,8 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(),nav:(AppRoutes)-> Un
                     viewModel.sendIntent(LoginIntent.OnChangePasswordVisibility)
                 }, onSubmitPressed = {
                     viewModel.sendIntent(LoginIntent.OnSubmitPressed)
+                }, onForgetPasswordClicked = {
+                    viewModel.sendIntent(LoginIntent.OnForgetPassword)
                 })
             LoadingScreen(state.isLoading)
         }
@@ -96,7 +99,8 @@ private fun DisplayContent(modifier: Modifier, state: LoginUiState,
                            onPhoneChanges: (String) -> Unit,onPasswordChanges: (String) -> Unit,
                            onCountryPressed: () -> Unit,
                            onChanePasswordVisibility:()-> Unit,
-                           onSubmitPressed: () -> Unit) {
+                           onSubmitPressed: () -> Unit,
+                           onForgetPasswordClicked:()-> Unit) {
     val strings = LocalStrings.current
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Image(painter = painterResource(R.drawable.logo), contentDescription = null,
@@ -107,12 +111,12 @@ private fun DisplayContent(modifier: Modifier, state: LoginUiState,
         DisplayForm(Modifier.fillMaxWidth(),state, onPhoneChanges = onPhoneChanges,
             onPasswordChanges = onPasswordChanges, onCountryPressed = onCountryPressed,
             onChangePasswordVisibility = onChanePasswordVisibility)
-//        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
-//            TextButton(onClick = {}) {
-//                UiText(strings.forgetPasswordQuestion, fontSize = 14.sp, fontWeight = FontWeight.W700,
-//                    color = Primary50)
-//            }
-//        }
+        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd){
+            TextButton(onClick = onForgetPasswordClicked) {
+                UiText(strings.forgetPasswordQuestion, fontSize = 14.sp, fontWeight = FontWeight.W700,
+                    color = Primary50)
+            }
+        }
         DisplayButtons(Modifier.padding(top = 56.dp).fillMaxWidth(),
             state.isSubmitButtonEnabled,onSubmitPressed,{})
     }

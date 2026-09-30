@@ -31,6 +31,7 @@ sealed interface LoginIntent : UiIntent{
     data object OnCountryDialogDismissed : LoginIntent
     data class OnCountrySelected(val country: Country) : LoginIntent
     data object OnChangePasswordVisibility: LoginIntent
+    data object OnForgetPassword: LoginIntent
 }
 sealed interface LoginEffect : UiEffect {
     data class ShowErrorToast(val message: String): LoginEffect
@@ -93,6 +94,9 @@ class LoginViewModel @Inject constructor(
                         isPasswordSecured = !isPasswordSecured
                     )
                 }
+            }
+            is LoginIntent.OnForgetPassword->{
+                emitEffect { LoginEffect.Nav(AppRoutes.ForgetPassword) }
             }
         }
     }

@@ -13,5 +13,9 @@ class ApiPaths {
         const val comment = "post/comment"
         const val commentLike = "post/comment/like/{id}"
         const val save_remove_post = "post/save-remove"
+        const val createPost = "post/store"
+        const val forgetPassword = "user/forgot/password"
+        const val verifyOtp = "user/verify/forgot/code"
+        const val resetPassword = "user/reset/forgot/password"
     }
 }

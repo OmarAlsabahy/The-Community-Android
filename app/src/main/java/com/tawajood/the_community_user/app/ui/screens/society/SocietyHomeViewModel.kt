@@ -28,6 +28,8 @@ sealed interface SocietyHomeIntent: UiIntent{
     data class UpdatePost(val post: PostDto?): SocietyHomeIntent
     data class OnImagePressed(val post: PostDto):SocietyHomeIntent
     data class ChangeBookMarkStatus(val id: Int?): SocietyHomeIntent
+    data object OnFloatActionPressed: SocietyHomeIntent
+    data class AddPost(val post: PostDto?): SocietyHomeIntent
 }
 sealed interface SocietyHomeEffect: UiEffect{
     data class ShowToast(val message: String): SocietyHomeEffect
@@ -137,6 +139,18 @@ class SocietyHomeViewModel @Inject constructor(
                         )
                     }
                     changeBookMarkStatus(intent.id)
+                }
+            }
+            is SocietyHomeIntent.OnFloatActionPressed->{
+                emitEffect { SocietyHomeEffect.Nav(AppRoutes.AddPost) }
+            }
+            is SocietyHomeIntent.AddPost -> {
+                if (intent.post != null && (currentState.posts.none { it.id == intent.post.id })) {
+                    setState {
+                        copy(
+                            posts = listOf(intent.post) + posts
+                        )
+                    }
                 }
             }
         }

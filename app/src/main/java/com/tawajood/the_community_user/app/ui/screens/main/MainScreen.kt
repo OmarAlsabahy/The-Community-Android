@@ -1,6 +1,7 @@
 package com.tawajood.the_community_user.app.ui.screens.main
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,7 +19,8 @@ import com.tawajood.the_community_user.domain.models.society.PostDto
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun MainScreen(nav:(AppRoutes?)-> Unit , postFlow: StateFlow<PostDto?>?){
+fun MainScreen(nav:(AppRoutes?)-> Unit , postFlow: StateFlow<PostDto?>?,
+               createdPostDto: StateFlow<PostDto?>?){
     val navController = rememberNavController()
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.White,
         bottomBar = {
@@ -28,14 +30,15 @@ fun MainScreen(nav:(AppRoutes?)-> Unit , postFlow: StateFlow<PostDto?>?){
                 }
             }
         }) {innerPadding->
-        NavHost(navController = navController , startDestination = AppRoutes.Home) {
+        NavHost(navController = navController , startDestination = AppRoutes.Home,
+            modifier = Modifier.padding(innerPadding)) {
             composable<AppRoutes.Home>{
                 HomeScreen()
             }
             composable<AppRoutes.SocietyHome>{
                 SocietyHomeScreen(postFlow = postFlow,nav = {route->
                     nav(route)
-                })
+                }, createdPostFlow = createdPostDto)
             }
         }
     }

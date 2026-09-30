@@ -1,5 +1,6 @@
 package com.tawajood.the_community_user.app.ui.screens.society
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,11 +21,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -35,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,11 +48,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.decode.VideoFrameDecoder
+import coil.request.ImageRequest
+import coil.request.videoFrameMillis
 import com.tawajood.the_community_user.R
 import com.tawajood.the_community_user.app.ui.shared.CommentCard
 import com.tawajood.the_community_user.app.ui.shared.DisplayPostItem
-import com.tawajood.the_community_user.app.ui.shared.ImageNetwork
 import com.tawajood.the_community_user.app.ui.shared.LoadingScreen
 import com.tawajood.the_community_user.app.ui.shared.UiText
 import com.tawajood.the_community_user.app.ui.theme.Black1f
@@ -139,6 +142,7 @@ fun PostDetailsScreen(id: Int, viewModel: PostDetailsViewModel = hiltViewModel()
                     .fillMaxSize()
                     .padding(innerPadding),
                 state,
+                context = context,
                 onLikeClicked = {
                     viewModel.sendIntent(PostDetailsIntent.OnLikeClicked)
                 },
@@ -161,7 +165,8 @@ private fun DisplayContent(
     state: PostDetailsUiState,
     onBackClick: () -> Unit,
     onLikeClicked: () -> Unit,
-    onCommentLikePressed:(Int?)-> Unit
+    onCommentLikePressed:(Int?)-> Unit,
+    context: Context
 ){
     if (state.isPageLoaded){
         LazyColumn(modifier) {
@@ -183,7 +188,7 @@ private fun DisplayContent(
                 )
             }
             item {
-                DisplayPostImages(state.post?.media)
+                DisplayPostImages(state.post?.media,context)
             }
             item {
                 DisplayReactionsSections(Modifier.padding(top = 28.dp).fillMaxWidth(),state.post?.likeStatus , state.post?.likesCount, state.post?.commentsCount,
@@ -246,7 +251,14 @@ fun DisplayDotsIndicator(modifier: Modifier, pagerState: PagerState, mediaSize: 
 }
 
 @Composable
-private fun DisplayPostImages(media: List<String?>?) {
+private fun DisplayPostImages(media: List<String?>?, context: Context) {
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+            .components {
+                add(VideoFrameDecoder.Factory())
+            }
+            .build()
+    }
     if (!media.isNullOrEmpty()){
         val pagerState = rememberPagerState { media.size }
         Box(modifier = Modifier.fillMaxWidth().aspectRatio(393f / 200f)){
@@ -254,7 +266,12 @@ private fun DisplayPostImages(media: List<String?>?) {
                 val currentMedia = media[index]
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
                     AsyncImage(
-                        model = currentMedia,
+                        model = ImageRequest.Builder(context)
+                            .data(currentMedia)
+                            .videoFrameMillis(1000)
+                            .crossfade(true)
+                            .build(),
+                        imageLoader = imageLoader,
                         contentDescription = "",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.fillMaxSize()

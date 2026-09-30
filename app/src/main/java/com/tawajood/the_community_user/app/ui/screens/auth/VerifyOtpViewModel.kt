@@ -4,6 +4,9 @@ import com.tawajood.the_community_user.app.base.BaseViewModel
 import com.tawajood.the_community_user.app.base.UiEffect
 import com.tawajood.the_community_user.app.base.UiIntent
 import com.tawajood.the_community_user.app.base.UiState
+import com.tawajood.the_community_user.app.ui.navigation.AppRoutes
+import com.tawajood.the_community_user.domain.base.RequestState
+import com.tawajood.the_community_user.domain.usecase.auth.VerifyOtpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import javax.inject.Inject
@@ -17,12 +20,17 @@ data class VerifyOtpUiState(
 ): UiState
 sealed interface VerifyOtpIntent: UiIntent{
     data class OnOtpChanges(val value: String): VerifyOtpIntent
-    data object OnSubmitPressed: VerifyOtpIntent
+    data class OnSubmitPressed(val phone: String): VerifyOtpIntent
     data object RecreateTimer: VerifyOtpIntent
 }
-sealed interface VerifyOtpEffect: UiEffect
+sealed interface VerifyOtpEffect: UiEffect{
+    data class Nav(val route: AppRoutes): VerifyOtpEffect
+    data class ShowToast(val message: String):VerifyOtpEffect
+}
 @HiltViewModel
-class VerifyOtpViewModel @Inject constructor(): BaseViewModel<VerifyOtpUiState, VerifyOtpIntent, VerifyOtpEffect>(VerifyOtpUiState()) {
+class VerifyOtpViewModel @Inject constructor(
+    private val verifyOtpUseCase: VerifyOtpUseCase
+): BaseViewModel<VerifyOtpUiState, VerifyOtpIntent, VerifyOtpEffect>(VerifyOtpUiState()) {
     init {
         loadPage()
     }
@@ -45,6 +53,7 @@ class VerifyOtpViewModel @Inject constructor(): BaseViewModel<VerifyOtpUiState, 
     }
 
     override suspend fun handleIntent(intent: VerifyOtpIntent) {
+        val currentState = getCurrentState()
         when(intent){
             is VerifyOtpIntent.OnOtpChanges->{
                 setState {
@@ -55,9 +64,46 @@ class VerifyOtpViewModel @Inject constructor(): BaseViewModel<VerifyOtpUiState, 
                 }
             }
             is VerifyOtpIntent.OnSubmitPressed->{
+                verifyOtp(intent.phone,currentState.otpValue)
             }
             is VerifyOtpIntent.RecreateTimer->{
                 startTimer()
+            }
+        }
+    }
+
+    private fun verifyOtp(phone: String, otpValue: String) {
+        launchScope {
+            verifyOtpUseCase(
+                VerifyOtpUseCase.VerifyOtpRequest(phone,otpValue)
+            ).collect { state->
+                when(state){
+                    is RequestState.Loading->{
+                        setState {
+                            copy(
+                                isLoading = true
+                            )
+                        }
+                    }
+                    is RequestState.Success->{
+                        setState {
+                            copy(
+                                isLoading = false
+                            )
+                        }
+                        if (state.data.resetToken!=null){
+                            emitEffect { VerifyOtpEffect.Nav(AppRoutes.NewPassword(state.data.resetToken,phone.trim())) }
+                        }
+                    }
+                    is RequestState.Error->{
+                        setState {
+                            copy(
+                                isLoading = false
+                            )
+                        }
+                        emitEffect { VerifyOtpEffect.ShowToast(state.message) }
+                    }
+                }
             }
         }
     }

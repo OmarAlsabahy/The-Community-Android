@@ -1,5 +1,6 @@
 package com.tawajood.the_community_user.app.ui.shared
 
+import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,16 +32,22 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.decode.VideoFrameDecoder
+import coil.request.ImageRequest
+import coil.request.videoFrameMillis
 import com.tawajood.the_community_user.R
 import com.tawajood.the_community_user.app.ui.theme.Black1f
 import com.tawajood.the_community_user.app.ui.theme.Gray9E
@@ -56,12 +63,13 @@ import com.tawajood.the_community_user.domain.models.society.User
 fun PostCard(post: PostDto,onFavClicked:(Int?)-> Unit,onCardClicked:(Int?)-> Unit,
              onImageClicked:(PostDto)-> Unit,onBookMarkClicked: (Int?) -> Unit){
     val pagerState = rememberPagerState() {post.media?.size?:0 }
+    val context = LocalContext.current
     Card(onClick = {onCardClicked(post.id)},modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp),
         border = BorderStroke(width = 1.dp , color = Primary10), colors = CardDefaults.cardColors(Color.White)) {
         Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
             DisplayUserSection(Modifier.fillMaxWidth(),post.user,post.created_at?:"")
             DisplayPostContent(Modifier.fillMaxWidth(),post.content?:"",post.category?:"",
-                post.media,pagerState, onImageClicked = {
+                post.media,pagerState, context,onImageClicked = {
                     onImageClicked(post)
                 })
             HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp).fillMaxWidth(), color = Primary10)
@@ -129,8 +137,16 @@ private fun DisplayPostContent(
     category: String,
     media: List<String?>?,
     pagerState: PagerState,
+    context: Context,
     onImageClicked: () -> Unit
 ) {
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+            .components {
+                add(VideoFrameDecoder.Factory())
+            }
+            .build()
+    }
     Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
         Column(modifier = Modifier.weight(2.5f), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             UiText(content, fontSize = 14.sp , fontWeight = FontWeight.W400 , color = Black1f)
@@ -142,7 +158,13 @@ private fun DisplayPostContent(
         HorizontalPager(pagerState, modifier = Modifier.weight(1f).aspectRatio(93f/96f)) { index->
             val currentMedia = media?.get(index)
             Box(Modifier.fillMaxSize().clip(shape = RoundedCornerShape(4.dp))){
-                AsyncImage(model = currentMedia , contentDescription = null, modifier = Modifier.fillMaxSize()
+                AsyncImage(model = ImageRequest.Builder(context)
+                    .data(currentMedia)
+                    .videoFrameMillis(1000)
+                    .crossfade(true)
+                    .build(),
+                    imageLoader = imageLoader
+                    , contentDescription = null, modifier = Modifier.fillMaxSize()
                     .clickable(enabled = true, onClick = onImageClicked),
                     contentScale = ContentScale.Fit,)
                 Box(Modifier.padding(start = 4.dp, top = 4.dp).background(color = Color.White.copy(alpha = 0.28f), shape = RoundedCornerShape(16.dp))

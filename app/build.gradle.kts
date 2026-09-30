@@ -121,4 +121,5 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.4.1")
     //
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.coil.video)
 }

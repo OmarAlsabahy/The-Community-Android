@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -31,7 +32,8 @@ fun AppButton(
     shape: Shape = RoundedCornerShape(16.dp),
     elevation: ButtonElevation? = ButtonDefaults.buttonElevation(),
     onClick: () -> Unit,
-    paddingValues: PaddingValues = PaddingValues(vertical = 12.dp)
+    paddingValues: PaddingValues = PaddingValues(vertical = 12.dp),
+    fontWeight: FontWeight = FontWeight.W400
 ) {
     Button(
         onClick = { onClick() },
@@ -52,7 +54,8 @@ fun AppButton(
             text = title,
             fontSize = fontSize,
             color = textColor,
-            modifier = Modifier.padding(vertical = 4.dp)
+            modifier = Modifier.padding(vertical = 4.dp),
+            fontWeight = fontWeight
         )
     }
 }

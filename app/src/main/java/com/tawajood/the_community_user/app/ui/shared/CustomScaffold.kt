@@ -10,13 +10,14 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun CustomScaffold(content: @Composable (PaddingValues)-> Unit,
                    hasTopBar: Boolean = false,topBarTitle: String? = null,
-                   floatActionButton : @Composable ()-> Unit ={}){
+                   floatActionButton : @Composable ()-> Unit ={},
+                   bottomAppBar:@Composable ()-> Unit={}){
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.White,
         topBar = {
             if (hasTopBar&&topBarTitle!=null){
                 CustomAppBar(topBarTitle)
             }
-        }, floatingActionButton = floatActionButton) {innerPadding->
+        }, floatingActionButton = floatActionButton, bottomBar = bottomAppBar) {innerPadding->
         content(innerPadding)
     }
 }

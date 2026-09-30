@@ -3,17 +3,22 @@ package com.tawajood.the_community_user.data.remote
 import com.tawajood.the_community_user.data.base.BaseResponse
 import com.tawajood.the_community_user.domain.models.auth.LoginRequest
 import com.tawajood.the_community_user.domain.models.auth.LoginResponse
+import com.tawajood.the_community_user.domain.models.auth.VerifyOtpResponseDto
 import com.tawajood.the_community_user.domain.models.home.AnnouncementModelDto
 import com.tawajood.the_community_user.domain.models.home.BannerModel
 import com.tawajood.the_community_user.domain.models.profile.ProfileResponseDto
 import com.tawajood.the_community_user.domain.models.society.PostCategoriesDto
 import com.tawajood.the_community_user.domain.models.society.PostDto
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -42,5 +47,29 @@ interface ApiService {
     @POST(ApiPaths.save_remove_post)
     @FormUrlEncoded
     suspend fun saveRemovePost(@Field("post_id")id: Int): Response<BaseResponse<Any?>>
+    @POST(ApiPaths.createPost)
+    @Multipart
+    suspend fun createPost(
+        @Part("content") content: RequestBody,
+        @Part("post_category_id") categoryId: RequestBody,
+        @Part media: List<MultipartBody.Part>?
+        ): Response<BaseResponse<PostDto>>
+    @POST(ApiPaths.forgetPassword)
+    @FormUrlEncoded
+    suspend fun forgetPassword(@Field("phone")phone: String): Response<BaseResponse<Any>>
+    @POST(ApiPaths.verifyOtp)
+    @FormUrlEncoded
+    suspend fun verifyOtp(
+        @Field("phone")phone: String,
+        @Field("code")code: String
+    ):Response<BaseResponse<VerifyOtpResponseDto>>
+    @POST(ApiPaths.resetPassword)
+    @FormUrlEncoded
+    suspend fun resetPassword(
+        @Field("reset_token")resetToken: String,
+        @Field("password")password: String,
+        @Field("password_confirmation")passwordConfirmation: String,
+        @Field("phone")phone: String
+    ):Response<BaseResponse<Any>>
 
 }

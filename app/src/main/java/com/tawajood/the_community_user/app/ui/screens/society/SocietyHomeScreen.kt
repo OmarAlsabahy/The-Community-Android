@@ -16,7 +16,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,10 +52,12 @@ import com.tawajood.the_community_user.domain.models.society.PostCategoriesDto
 import com.tawajood.the_community_user.domain.models.society.PostDto
 import com.tawajood.the_community_user.utils.ToastUtils
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 
 @Composable
 fun SocietyHomeScreen(viewModel: SocietyHomeViewModel = hiltViewModel(),
-                      nav:(AppRoutes)-> Unit,postFlow: StateFlow<PostDto?>?){
+                      nav:(AppRoutes)-> Unit,postFlow: StateFlow<PostDto?>?,
+                      createdPostFlow: StateFlow<PostDto?>?){
     val strings = LocalStrings.current
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
@@ -72,8 +78,20 @@ fun SocietyHomeScreen(viewModel: SocietyHomeViewModel = hiltViewModel(),
             viewModel.sendIntent(SocietyHomeIntent.UpdatePost(post))
         }
     }
+    LaunchedEffect(Unit) {
+        createdPostFlow?.collect{post->
+            viewModel.sendIntent(SocietyHomeIntent.AddPost(post))
+        }
+    }
     Scaffold(modifier = Modifier.fillMaxSize(), containerColor = Color.White, topBar = {
         DisplayTopBar(Modifier.fillMaxWidth(),strings.society)
+    }, floatingActionButton = {
+        Card(onClick ={
+            viewModel.sendIntent(SocietyHomeIntent.OnFloatActionPressed)
+        } ,shape = CircleShape , colors = CardDefaults.cardColors(Primary)) {
+            Icon(painterResource(R.drawable.edit_ic),contentDescription = null,
+                modifier = Modifier.padding(18.dp), tint = Color.Unspecified)
+        }
     }) {innerPadding->
         Box(modifier = Modifier.fillMaxSize()){
             DisplayContent(Modifier.padding(start = 16.dp, end = 16.dp, top = 24.dp)

@@ -26,5 +26,13 @@ sealed interface AppRoutes {
 
     @Serializable
     data class PostImage(val post: PostDto): AppRoutes
+    @Serializable
+    data object AddPost: AppRoutes
 
+    @Serializable
+    data object ForgetPassword: AppRoutes
+
+
+    @Serializable
+    data class NewPassword(val resetToken: String,val phone: String): AppRoutes
 }
