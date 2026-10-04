@@ -34,7 +34,8 @@ fun BaseTextFiled(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     backgroundColor: Color = Color.Transparent,
-    borderColor : Color = BorderColor
+    borderColor : Color = BorderColor,
+    minLines: Int=1
 ) {
     Column(
         modifier = modifier,
@@ -72,6 +73,7 @@ fun BaseTextFiled(
             enabled = enabled,
             readOnly = readOnly,
             maxLines = maxLines,
+            minLines = minLines,
             textStyle = TextStyle(
                 color = Color.Black,
                 fontSize = 14.sp

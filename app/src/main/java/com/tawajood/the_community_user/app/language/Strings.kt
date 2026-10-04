@@ -151,6 +151,11 @@ interface Strings {
     val contactUs: String
     val settings: String
     val logout: String
+    val personalAccount: String
+    val personalInformation: String
+    val postsHistory: String
+    val complaintsHistory: String
+    val favorites: String
 
     // ********** Profile **********
     val editProfile: String
@@ -302,4 +307,18 @@ interface Strings {
     val society: String
     val scan: String
     val notification: String
+
+    // ********** Customer Services **********
+    val customerServices: String
+    val howCanWeHelpYou: String
+
+    // ********** Add Complaint **********
+    val submitComplaint: String
+    val publish: String
+    val complaintSubmittedSuccessfully: String
+    val yourProblemWillBeSolvedSoon: String
+    val address: String
+    val complaint: String
+    val complaintPlaceholder: String
+    val addImageOrVideo: String
 }

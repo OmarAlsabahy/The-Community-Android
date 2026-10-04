@@ -157,6 +157,11 @@ class StringsAr : Strings {
     override val contactUs = "تواصل معنا"
     override val settings = "الاعدادات"
     override val logout = "تسجيل الخروج"
+    override val personalAccount: String = "الحساب الشخصي"
+    override val personalInformation: String = "المعلومات الشخصية"
+    override val postsHistory: String = "سجل المنشورات"
+    override val complaintsHistory: String = "سجل الشكاوي"
+    override val favorites: String = "المفضلة"
 
     // ********** Profile **********
     override val editProfile: String = "تعديل الملف الشخصي"
@@ -320,4 +325,18 @@ class StringsAr : Strings {
         get() = "مسح"
     override val notification: String
         get() = "الاشعارات"
+
+    // ********** Customer Services **********
+    override val customerServices: String = "خدمة العملاء"
+    override val howCanWeHelpYou: String = "كيف يمكننا مساعدتك؟"
+
+    // ********** Add Complaint **********
+    override val submitComplaint: String = "تقديم شكوي"
+    override val publish: String = "نشر"
+    override val complaintSubmittedSuccessfully: String = "تم ارسال شكوتك بنجاح"
+    override val yourProblemWillBeSolvedSoon: String = "سوف يتم حل مشكلتك قريبا."
+    override val address: String = "العنوان"
+    override val complaint: String = "الشكوي"
+    override val complaintPlaceholder: String = "Lorem ipsum dolor sit amet consectetur. Mauris neque vestibulum pulvinar purus tempus magna ultrices."
+    override val addImageOrVideo: String = "اضافة صوره او فيديو"
 }

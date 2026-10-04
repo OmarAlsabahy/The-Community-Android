@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.tawajood.the_community_user.app.ui.navigation.AppRoutes
 import com.tawajood.the_community_user.app.ui.screens.home.HomeScreen
+import com.tawajood.the_community_user.app.ui.screens.more.MoreScreen
 import com.tawajood.the_community_user.app.ui.screens.society.PostImageScreen
 import com.tawajood.the_community_user.app.ui.screens.society.SocietyHomeScreen
 import com.tawajood.the_community_user.app.ui.shared.CustomBottomAppBar
@@ -33,12 +34,15 @@ fun MainScreen(nav:(AppRoutes?)-> Unit , postFlow: StateFlow<PostDto?>?,
         NavHost(navController = navController , startDestination = AppRoutes.Home,
             modifier = Modifier.padding(innerPadding)) {
             composable<AppRoutes.Home>{
-                HomeScreen()
+                HomeScreen(nav = nav)
             }
             composable<AppRoutes.SocietyHome>{
                 SocietyHomeScreen(postFlow = postFlow,nav = {route->
                     nav(route)
                 }, createdPostFlow = createdPostDto)
+            }
+            composable<AppRoutes.More>{
+                MoreScreen(nav=nav)
             }
         }
     }

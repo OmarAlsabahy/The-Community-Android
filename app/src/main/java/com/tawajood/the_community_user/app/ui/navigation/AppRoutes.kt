@@ -35,4 +35,24 @@ sealed interface AppRoutes {
 
     @Serializable
     data class NewPassword(val resetToken: String,val phone: String): AppRoutes
+
+    @Serializable
+    data object Guide: AppRoutes
+
+    @Serializable
+    data object CustomerServices: AppRoutes
+    @Serializable
+    data class AddComplaint(val categoryId: Int): AppRoutes{
+
+    }
+
+    @Serializable
+    data object More: AppRoutes
+
+    @Serializable
+    data object ComplaintHistory: AppRoutes
+
+    @Serializable
+    data object Maintenance: AppRoutes
+
 }

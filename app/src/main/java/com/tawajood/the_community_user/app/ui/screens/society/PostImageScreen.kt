@@ -1,5 +1,6 @@
 package com.tawajood.the_community_user.app.ui.screens.society
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,7 +40,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.decode.VideoFrameDecoder
+import coil.request.ImageRequest
+import coil.request.videoFrameMillis
 import com.tawajood.the_community_user.R
 import com.tawajood.the_community_user.app.ui.navigation.AppRoutes
 import com.tawajood.the_community_user.app.ui.shared.DisplayPostItem
@@ -91,7 +97,7 @@ fun PostImageScreen(
     }) { innerPadding->
         Column(modifier = Modifier.fillMaxSize().padding(innerPadding),
             verticalArrangement = Arrangement.Center) {
-            DisplayImages(pagerState, images)
+            DisplayImages(pagerState, images,context)
         }
     }
 }
@@ -192,12 +198,29 @@ private fun DisplayReactionsSections(
 }
 
 @Composable
-private fun DisplayImages(state: PagerState, images: List<String>) {
+private fun DisplayImages(state: PagerState, images: List<String>, context: Context) {
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+            .components {
+                add(VideoFrameDecoder.Factory())
+            }
+            .build()
+    }
     HorizontalPager(state,modifier = Modifier.fillMaxWidth().aspectRatio(1f)) {index->
         Box(Modifier.fillMaxSize()){
             val currentImage = images[index]
-            AsyncImage(model = currentImage , contentDescription = null, modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop)
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(currentImage)
+                    .videoFrameMillis(1000)
+                    .decoderFactory(VideoFrameDecoder.Factory())
+                    .crossfade(true)
+                    .build(),
+                imageLoader = imageLoader,
+                contentDescription = "",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
             Box(
                 Modifier
                     .padding(top = 12.dp, end = 12.dp)

@@ -162,6 +162,11 @@ class StringsEn : Strings {
     override val contactUs = "Contact Us"
     override val settings = "Settings"
     override val logout = "Logout"
+    override val personalAccount: String = "Personal Account"
+    override val personalInformation: String = "Personal Information"
+    override val postsHistory: String = "Posts History"
+    override val complaintsHistory: String = "Complaints History"
+    override val favorites: String = "Favorites"
 
     // ********** Profile **********
     override val editProfile: String = "Edit profile"
@@ -327,4 +332,18 @@ class StringsEn : Strings {
         get() = "Scan"
     override val notification: String
         get() = "Notification"
+
+    // ********** Customer Services **********
+    override val customerServices: String = "Customer Services"
+    override val howCanWeHelpYou: String = "How can we help you?"
+
+    // ********** Add Complaint **********
+    override val submitComplaint: String = "Submit Complaint"
+    override val publish: String = "Publish"
+    override val complaintSubmittedSuccessfully: String = "Your complaint submitted successfully"
+    override val yourProblemWillBeSolvedSoon: String = "Your problem will be solved soon."
+    override val address: String = "Address"
+    override val complaint: String = "Complaint"
+    override val complaintPlaceholder: String = "Lorem ipsum dolor sit amet consectetur. Mauris neque vestibulum pulvinar purus tempus magna ultrices."
+    override val addImageOrVideo: String = "Add image or video"
 }

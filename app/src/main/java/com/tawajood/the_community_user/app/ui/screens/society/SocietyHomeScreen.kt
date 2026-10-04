@@ -200,6 +200,6 @@ private fun DisplayTopBar(modifier: Modifier, title: String) {
     Box(modifier){
         UiText(title , fontSize = 18.sp , color = Black1f , fontWeight = FontWeight.W700,
             textAlign = TextAlign.Center, modifier = Modifier.align(Alignment.Center))
-        TopHeaderButton(R.drawable.notification_ic) { }
+        TopHeaderButton(icon = R.drawable.notification_ic) { }
     }
 }

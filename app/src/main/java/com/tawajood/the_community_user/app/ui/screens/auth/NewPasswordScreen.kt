@@ -60,7 +60,7 @@ fun NewPasswordScreen(viewModel: NewPasswordViewModel = hiltViewModel(),resetTok
             }
         }
     }
-    CustomScaffold(topBarTitle = "كلمة مرور جديدة",hasTopBar = true, content = {paddingValues->
+    CustomScaffold(topBarTitle = strings.newPassword,hasTopBar = true, content = {paddingValues->
         Box(modifier = Modifier.fillMaxSize()){
             DisplayContent(Modifier.padding(start = 16.dp, end = 16.dp, top = 40.dp)
                 .fillMaxSize().padding(paddingValues).verticalScroll(scrollState),state,
@@ -87,9 +87,9 @@ fun DisplayContent(modifier: Modifier,state: NewPasswordUiState,strings: Strings
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(painterResource(R.drawable.reset_password_ic),contentDescription = null,
             tint = Color.Unspecified)
-        UiText("انشاء كلمة مرور جديدة", fontSize = 24.sp, color = Color.Black, fontWeight = FontWeight.W700,
+        UiText(strings.createNewPassword, fontSize = 24.sp, color = Color.Black, fontWeight = FontWeight.W700,
             textAlign = TextAlign.Center)
-        UiText("تعيين كلمة المرور الخاصة بك", fontSize = 16.sp, color = TextGray, textAlign = TextAlign.Center)
+        UiText(strings.createNewPasswordForYou, fontSize = 16.sp, color = TextGray, textAlign = TextAlign.Center)
         BaseTextFiled(label = strings.password, value = state.passwordFieldValue , onValueChange = onPasswordChanges,
             placeholderText = "********", isError = false, suffix = {
                 Icon(painterResource(if (state.isConfirmPasswordVisible) R.drawable.eye_ic else R.drawable.eye_off_ic),contentDescription = null,
@@ -97,14 +97,14 @@ fun DisplayContent(modifier: Modifier,state: NewPasswordUiState,strings: Strings
                         onChangePasswordVisibility()
                     })
             }, visualTransformation = if (state.isPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None)
-        BaseTextFiled(label = strings.password, value = state.confirmPasswordFieldValue , onValueChange = onConfirmPasswordChanges,
+        BaseTextFiled(label = strings.confirmPassword, value = state.confirmPasswordFieldValue , onValueChange = onConfirmPasswordChanges,
             placeholderText = "********", isError = false, suffix = {
                 Icon(painterResource(if (state.isConfirmPasswordVisible) R.drawable.eye_ic else R.drawable.eye_off_ic),contentDescription = null,
                     tint = Color.Unspecified, modifier = Modifier.clickable{
                         onChangeConfirmPasswordVisibility()
                     })
             }, visualTransformation = if (state.isConfirmPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None)
-        AppButton(title = " حفظ ", modifier = Modifier.padding(top = 96.dp).fillMaxWidth(), shape = RoundedCornerShape(16.dp),
+        AppButton(title = strings.save, modifier = Modifier.padding(top = 96.dp).fillMaxWidth(), shape = RoundedCornerShape(16.dp),
             backgroundColor = Primary , paddingValues = PaddingValues(vertical = 12.dp),
             textColor = Color.White, isEnabled = state.isButtonEnabled, onClick = onSubmitPressed
         )

@@ -213,6 +213,18 @@ class SocietyHomeViewModel @Inject constructor(
                                     }
                                 )
                             }
+                        }is RequestState.Success->{
+                            setState {
+                                copy(
+                                    posts = posts.map {
+                                        if (it.id == id){
+                                            state.data
+                                        }else{
+                                            it
+                                        }
+                                    }
+                                )
+                            }
                         }
 
                         else -> {}

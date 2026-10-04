@@ -12,5 +12,7 @@ sealed class BottomNavBarItems(val title: String , val icon: Int,val route : App
     )
     data class Scan(val name: String): BottomNavBarItems(title = name , icon = R.drawable.scan_ic)
     data class Notification(val name: String): BottomNavBarItems(title = name , icon = R.drawable.notification_ic)
-    data class Profile(val name: String): BottomNavBarItems(title = name , icon = R.drawable.profile_ic)
+    data class Profile(val name: String): BottomNavBarItems(title = name , icon = R.drawable.profile_ic,
+        route = AppRoutes.More
+    )
 }

@@ -34,7 +34,7 @@ fun PhoneField(
     isEnabled: Boolean = true
 ){
     Box(modifier = Modifier.fillMaxWidth().background(color = Color.Transparent, shape = RoundedCornerShape(12.dp))
-        .border(width = 2.dp, color = BorderColor, shape = RoundedCornerShape(12.dp))
+        .border(width = 1.dp, color = BorderColor, shape = RoundedCornerShape(12.dp))
         .padding(horizontal = 16.dp, vertical = 12.dp)) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)) {

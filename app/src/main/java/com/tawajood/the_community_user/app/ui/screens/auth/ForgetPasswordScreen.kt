@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tawajood.the_community_user.R
+import com.tawajood.the_community_user.app.language.LocalStrings
 import com.tawajood.the_community_user.app.ui.navigation.AppRoutes
 import com.tawajood.the_community_user.app.ui.shared.AppButton
 import com.tawajood.the_community_user.app.ui.shared.CustomScaffold
@@ -39,6 +40,7 @@ fun ForgetPasswordScreen(viewModel: ForgetPasswordViewModel = hiltViewModel(),
                          nav:(AppRoutes)-> Unit){
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    val strings = LocalStrings.current
     val scrollState = rememberScrollState()
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -52,16 +54,16 @@ fun ForgetPasswordScreen(viewModel: ForgetPasswordViewModel = hiltViewModel(),
             }
         }
     }
-    CustomScaffold(topBarTitle = "نسيت كلمة المرور",hasTopBar = true, content = {paddingValue->
+    CustomScaffold(topBarTitle = strings.forgetPassword,hasTopBar = true, content = {paddingValue->
         Box(modifier = Modifier.fillMaxSize()){
             Column(modifier = Modifier.padding(horizontal = 16.dp).fillMaxSize().padding(paddingValue)
                 .verticalScroll(scrollState), horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center) {
                 Icon(painterResource(R.drawable.reset_password_ic),contentDescription = null,
                     tint = Color.Unspecified)
-                UiText("تعيين كلمة المرور", fontSize = 24.sp, color = Color.Black, fontWeight = FontWeight.W700,
+                UiText(strings.passwordConfirmation, fontSize = 24.sp, color = Color.Black, fontWeight = FontWeight.W700,
                     textAlign = TextAlign.Center, modifier = Modifier.padding(top = 32.dp))
-                UiText("يرجى إدخال رقمك لمتابعة تغيير كلمة المرور", fontSize = 18.sp,
+                UiText(strings.pleaseEnterYourPhoneNumberToProceedWithChangingYourPassword, fontSize = 18.sp,
                     textAlign = TextAlign.Center, color = TextGray, modifier = Modifier.padding(top = 12.dp,
                         bottom = 40.dp)
                 )
@@ -70,7 +72,7 @@ fun ForgetPasswordScreen(viewModel: ForgetPasswordViewModel = hiltViewModel(),
                         viewModel.sendIntent(ForgetPasswordIntent.OnPhoneChanges(value))
                     }, onCountryCodePressed = {})
                 AppButton(modifier = Modifier.padding(top = 96.dp).fillMaxWidth(), shape = RoundedCornerShape(16.dp),
-                    title = "التالي", fontSize = 16.sp, textColor = Color.White, isEnabled = state.isButtonEnabled, onClick = {
+                    title = strings.continueButton, fontSize = 16.sp, textColor = Color.White, isEnabled = state.isButtonEnabled, onClick = {
                         viewModel.sendIntent(ForgetPasswordIntent.ForgetPassword)
                     })
             }

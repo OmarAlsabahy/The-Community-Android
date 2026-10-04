@@ -1,12 +1,16 @@
 package com.tawajood.the_community_user.app.di
 
 import com.tawajood.the_community_user.data.repository.auth.AuthRepository
+import com.tawajood.the_community_user.data.repository.customerServices.CustomerServicesRepository
+import com.tawajood.the_community_user.data.repository.guide.GuideRepository
 import com.tawajood.the_community_user.data.repository.home.HomeRepository
 import com.tawajood.the_community_user.data.repository.language.LanguageRepository
 import com.tawajood.the_community_user.data.repository.on_boarding.OnBoardingRepository
 import com.tawajood.the_community_user.data.repository.profile.ProfileRepository
 import com.tawajood.the_community_user.data.repository.society.SocietyHomeRepository
 import com.tawajood.the_community_user.domain.repository.auth.IAuthRepository
+import com.tawajood.the_community_user.domain.repository.customerServices.ICustomerServiceRepository
+import com.tawajood.the_community_user.domain.repository.guide.IGuideRepository
 import com.tawajood.the_community_user.domain.repository.home.IHomeRepository
 import com.tawajood.the_community_user.domain.repository.language.ILanguageRepository
 import com.tawajood.the_community_user.domain.repository.on_boarding.IOnBoardingRepository
@@ -53,5 +57,14 @@ abstract class RepositoryModule {
     abstract fun bindSocietyRepository(
         repository: SocietyHomeRepository
     ): ISocietyHomeRepository
-
+    @Binds
+    @Singleton
+    abstract fun bindGuideRepository(
+        repository: GuideRepository
+    ): IGuideRepository
+    @Binds
+    @Singleton
+    abstract fun bindCustomerServicesRepository(
+        repository: CustomerServicesRepository
+    ): ICustomerServiceRepository
 }

@@ -70,6 +70,12 @@ class PostImageViewModel @Inject constructor(
                             )
                         }
                         emitEffect{PostImageEffect.ShowToast(state.message)}
+                    }is RequestState.Success->{
+                        setState {
+                            copy(
+                                post = state.data
+                            )
+                        }
                     }
                     else -> {}
                 }

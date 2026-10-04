@@ -13,6 +13,11 @@ import com.tawajood.the_community_user.app.ui.screens.auth.ForgetPasswordScreen
 import com.tawajood.the_community_user.app.ui.screens.auth.LoginScreen
 import com.tawajood.the_community_user.app.ui.screens.auth.NewPasswordScreen
 import com.tawajood.the_community_user.app.ui.screens.auth.VerifyOtpScreen
+import com.tawajood.the_community_user.app.ui.screens.customerServices.AddComplaintScreen
+import com.tawajood.the_community_user.app.ui.screens.customerServices.ComplaintsHistoryScreen
+import com.tawajood.the_community_user.app.ui.screens.customerServices.CustomerServicesScreen
+import com.tawajood.the_community_user.app.ui.screens.customerServices.MaintenanceScreen
+import com.tawajood.the_community_user.app.ui.screens.guide.GuideScreen
 import com.tawajood.the_community_user.app.ui.screens.main.MainScreen
 import com.tawajood.the_community_user.app.ui.screens.society.AddPostScreen
 import com.tawajood.the_community_user.app.ui.screens.society.PostDetailsScreen
@@ -116,6 +121,28 @@ fun RootNavHost(
                     rootController.previousBackStackEntry?.savedStateHandle?.set("createdPost",post)
                     rootController.popBackStack()
                 })
+            }
+            composable<AppRoutes.Guide>{
+                GuideScreen()
+            }
+            composable<AppRoutes.CustomerServices>{
+                CustomerServicesScreen(nav = {route->
+                    rootController.navigate(route)
+                })
+            }
+            composable<AppRoutes.AddComplaint>{
+                val args = it.toRoute<AppRoutes.AddComplaint>()
+                AddComplaintScreen(categoryId = args.categoryId, returnToHome = {route->
+                    rootController.navigate(route){
+                        popUpTo(0)
+                    }
+                })
+            }
+            composable<AppRoutes.ComplaintHistory>{
+                ComplaintsHistoryScreen()
+            }
+            composable<AppRoutes.Maintenance>{
+                MaintenanceScreen()
             }
         }
     }

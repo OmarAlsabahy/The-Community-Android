@@ -26,6 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.tawajood.the_community_user.R
+import com.tawajood.the_community_user.app.language.LocalStrings
+import com.tawajood.the_community_user.app.language.Strings
 import com.tawajood.the_community_user.app.ui.navigation.AppRoutes
 import com.tawajood.the_community_user.app.ui.shared.AppButton
 import com.tawajood.the_community_user.app.ui.shared.CustomScaffold
@@ -41,6 +43,7 @@ fun VerifyOtpScreen(viewModel: VerifyOtpViewModel = hiltViewModel(),
                     phoneNumber: String,countryCode: String,nav:(AppRoutes)-> Unit){
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val strings = LocalStrings.current
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -54,10 +57,10 @@ fun VerifyOtpScreen(viewModel: VerifyOtpViewModel = hiltViewModel(),
             }
         }
     }
-    CustomScaffold(hasTopBar = true, topBarTitle = "تاكيد  الحساب", content = {innerPadding->
+    CustomScaffold(hasTopBar = true, topBarTitle = strings.phoneVerification, content = {innerPadding->
         Box(modifier = Modifier.fillMaxSize()){
             DisplayContent(Modifier.padding(top = 40.dp, start = 16.dp, end = 16.dp).fillMaxSize()
-                .padding(innerPadding).verticalScroll(scrollState),state,
+                .padding(innerPadding).verticalScroll(scrollState),state,strings,
                 phoneNumber,countryCode, onOtpChanges = {value->
                     viewModel.sendIntent(VerifyOtpIntent.OnOtpChanges(value))
                 }, onRestartTimer = {
@@ -70,32 +73,32 @@ fun VerifyOtpScreen(viewModel: VerifyOtpViewModel = hiltViewModel(),
     })
 }
 @Composable
-private fun DisplayContent(modifier: Modifier,state: VerifyOtpUiState,phoneNumber: String ,
+private fun DisplayContent(modifier: Modifier,state: VerifyOtpUiState,strings: Strings,phoneNumber: String ,
                            countryCode: String,onOtpChanges:(String)-> Unit,onRestartTimer:()-> Unit,
                            onSubmitPressed:()-> Unit){
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(painterResource(R.drawable.verifyotp_ic),contentDescription = null, tint = Color.Unspecified,
             modifier = Modifier.padding(bottom = 32.dp))
-        UiText("التحقق من الهاتف", fontSize = 24.sp, color = Color.Black, fontWeight = FontWeight.W700,
+        UiText(strings.phoneVerification, fontSize = 24.sp, color = Color.Black, fontWeight = FontWeight.W700,
             textAlign = TextAlign.Center)
-        UiText("أدخل الرقم المكون من 6 أرقام الذي أرسلناه عبر رقم الهاتف: ${phoneNumber}",
+        UiText("${strings.otpDescription}: $countryCode$phoneNumber",
             fontSize = 16.sp, color = TextGray, modifier = Modifier.padding(top = 12.dp),
             textAlign = TextAlign.Center)
         OtpTextField(modifier = Modifier.padding(top = 40.dp).fillMaxWidth(),
             otpValue = state.otpValue, digitsCount = 5, onValueChange = onOtpChanges)
-        UiText("${state.timer} ثانية", fontSize = 12.sp, color = Secondary, fontWeight = FontWeight.W700,
+        UiText("${state.timer} ${strings.second}", fontSize = 12.sp, color = Secondary, fontWeight = FontWeight.W700,
             modifier = Modifier.padding(top = 32.dp))
         if (state.timer==0){
             Row(modifier = Modifier.padding(top = 24.dp).fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center) {
-                UiText("لم تستلم الرمز؟", fontSize = 16.sp, color = TextGray, fontWeight = FontWeight.W400)
-                UiText(" اعادة ارسال", fontSize = 16.sp, color = Secondary, fontWeight = FontWeight.W400,
+                UiText(strings.didNotReceiveTheCodeQuestion, fontSize = 16.sp, color = TextGray, fontWeight = FontWeight.W400)
+                UiText(" ${strings.resendIt}", fontSize = 16.sp, color = Secondary, fontWeight = FontWeight.W400,
                     modifier = Modifier.clickable{
                         onRestartTimer()
                     })
             }
         }
-        AppButton(title = "التالي", modifier = Modifier.padding(top = 96.dp).fillMaxWidth(), onClick = onSubmitPressed,
+        AppButton(title = strings.continueButton, modifier = Modifier.padding(top = 96.dp).fillMaxWidth(), onClick = onSubmitPressed,
             isEnabled = state.isButtonEnabled)
     }
 }

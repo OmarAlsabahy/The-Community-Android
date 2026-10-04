@@ -4,6 +4,12 @@ import com.tawajood.the_community_user.data.base.BaseResponse
 import com.tawajood.the_community_user.domain.models.auth.LoginRequest
 import com.tawajood.the_community_user.domain.models.auth.LoginResponse
 import com.tawajood.the_community_user.domain.models.auth.VerifyOtpResponseDto
+import com.tawajood.the_community_user.domain.models.customerServices.AddComplaintRequest
+import com.tawajood.the_community_user.domain.models.customerServices.ComplaintResponseDto
+import com.tawajood.the_community_user.domain.models.customerServices.CustomerServicesCategoryResponseDto
+import com.tawajood.the_community_user.domain.models.customerServices.MaintenanceCategoryDto
+import com.tawajood.the_community_user.domain.models.guide.GuideCategoryResponseDto
+import com.tawajood.the_community_user.domain.models.guide.GuideResponseDto
 import com.tawajood.the_community_user.domain.models.home.AnnouncementModelDto
 import com.tawajood.the_community_user.domain.models.home.BannerModel
 import com.tawajood.the_community_user.domain.models.profile.ProfileResponseDto
@@ -36,7 +42,7 @@ interface ApiService {
     @GET(ApiPaths.posts)
     suspend fun getPosts(@Query("category_id") categoryId: Int?): Response<BaseResponse<List<PostDto>>>
     @POST(ApiPaths.changePostLike)
-    suspend fun changePostLikeStatus(@Path("id")id: Int): Response<BaseResponse<Any?>>
+    suspend fun changePostLikeStatus(@Path("id")id: Int): Response<BaseResponse<PostDto>>
     @GET(ApiPaths.postDetails)
     suspend fun getPostDetails(@Path("id")id: Int): Response<BaseResponse<PostDto>>
     @POST(ApiPaths.comment)
@@ -71,5 +77,28 @@ interface ApiService {
         @Field("password_confirmation")passwordConfirmation: String,
         @Field("phone")phone: String
     ):Response<BaseResponse<Any>>
-
+    @GET(ApiPaths.guideCategories)
+    suspend fun getGuideCategories(): Response<BaseResponse<List<GuideCategoryResponseDto>>>
+    @GET(ApiPaths.guides)
+    suspend fun getGuides(@Query("category_id")categoryId: Int?): Response<BaseResponse<List<GuideResponseDto>>>
+    @GET(ApiPaths.guideSearch)
+    suspend fun guidSearch(@Query("text")query: String): Response<BaseResponse<List<GuideResponseDto>>>
+    @GET(ApiPaths.customerServicesCategories)
+    suspend fun getCustomerServicesCategories(): Response<BaseResponse<List<CustomerServicesCategoryResponseDto>>>
+    
+    @Multipart
+    @POST(ApiPaths.addComplaint)
+    suspend fun addComplaint(
+        @Part("category_id") categoryId: RequestBody,
+        @Part("phone") phone: RequestBody,
+        @Part("address") address: RequestBody,
+        @Part("complaint") complaint: RequestBody,
+        @Part("country_code") countryCode: RequestBody,
+        @Part("description") description: RequestBody,
+        @Part media: List<MultipartBody.Part>?
+    ): Response<BaseResponse<Any>>
+    @GET(ApiPaths.complaintsHistory)
+    suspend fun getComplaints(): Response<BaseResponse<List<ComplaintResponseDto>>>
+    @GET(ApiPaths.maintenanceCategories)
+    suspend fun getMaintenanceCategories(): Response<BaseResponse<List<MaintenanceCategoryDto>>>
 }

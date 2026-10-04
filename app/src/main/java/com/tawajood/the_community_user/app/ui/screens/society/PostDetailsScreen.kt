@@ -269,6 +269,7 @@ private fun DisplayPostImages(media: List<String?>?, context: Context) {
                         model = ImageRequest.Builder(context)
                             .data(currentMedia)
                             .videoFrameMillis(1000)
+                            .decoderFactory(VideoFrameDecoder.Factory())
                             .crossfade(true)
                             .build(),
                         imageLoader = imageLoader,

@@ -28,7 +28,7 @@ class SocietyHomeRepository @Inject constructor(
         api.getPosts(categoryId)
     }
 
-    override suspend fun changePostLikeStatus(id: Int): RequestState<Any?> = wrapApi {
+    override suspend fun changePostLikeStatus(id: Int): RequestState<PostDto> = wrapApi {
         api.changePostLikeStatus(id)
     }
 

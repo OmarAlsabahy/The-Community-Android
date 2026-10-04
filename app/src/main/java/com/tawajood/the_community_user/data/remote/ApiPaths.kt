@@ -17,5 +17,12 @@ class ApiPaths {
         const val forgetPassword = "user/forgot/password"
         const val verifyOtp = "user/verify/forgot/code"
         const val resetPassword = "user/reset/forgot/password"
+        const val guideCategories = "guide/category"
+        const val guides = "guide"
+        const val guideSearch = "guide/search"
+        const val customerServicesCategories = "customer-service/categories"
+        const val addComplaint = "customer-service/store"
+        const val complaintsHistory = "customer-service/history"
+        const val maintenanceCategories = "maintenance/categories"
     }
 }

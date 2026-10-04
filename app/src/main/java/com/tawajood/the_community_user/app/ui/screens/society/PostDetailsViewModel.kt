@@ -208,6 +208,13 @@ class PostDetailsViewModel @Inject constructor(
                             revertData()
                             emitEffect { PostDetailsEffect.ShowToast(state.message) }
                         }
+                        is RequestState.Success->{
+                            setState {
+                                copy(
+                                    post = state.data
+                                )
+                            }
+                        }
                         else -> {}
                     }
                 }
